@@ -6,7 +6,7 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<DevSteamAPIContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 //Configurar CORS
 builder.Services.AddCors(options =>
@@ -63,7 +63,10 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
     options.SignIn.RequireConfirmedAccount = false;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireDigit = true;
     options.Password.RequiredLength = 4;
+
 })
     .AddEntityFrameworkStores<DevSteamAPIContext>()
     .AddDefaultTokenProviders(); // Adiocionando o provedor de tokens padrão
@@ -83,7 +86,7 @@ app.UseSwaggerUI();
 
 //Mapear os EndPoints padrão do Identity Framework
 app.MapGroup("/Users").MapIdentityApi<IdentityUser>();
-app.MapGroup("/Roles").MapIdentityApi<IdentityRole>();
+
 
 app.UseHttpsRedirection();
 //Permitir a autnenticação e autorização de qualquer origem
